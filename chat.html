@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PermaChat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ffff;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      overflow: hidden;
+    }
+
+    #chatWindow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 40px;
+      padding: 10px;
+      overflow-y: auto;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 6px #00ffff;
+      white-space: pre-wrap;
+    }
+
+    .message {
+      border: 1px solid #00ffff;
+      padding: 8px;
+      margin: 6px;
+      display: inline-block;
+      max-width: 80%;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    .left { float: left; clear: both; }
+    .right { float: right; clear: both; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #inputBox {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 2px solid #00ffff;
+      padding: 8px;
+      background: black;
+    }
+
+    #userInput {
+      background: black;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      width: 90%;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      padding: 6px;
+    }
+
+    #escapeHint {
+      position: absolute;
+      bottom: 4px;
+      right: 10px;
+      font-size: 10px;
+      color: #00ffff;
+      opacity: 0.6;
+    }
+
+    .system {
+      color: #ff4444;
+    }
+  </style>
+</head>
+<body>
+  <div id="chatWindow"></div>
+  <div id="inputBox">
+    <input type="text" id="userInput" placeholder="Type here..." />
+    <div id="escapeHint">press ESC to leave chat</div>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const userInput = document.getElementById('userInput');
+
+    const bots = ["Riley", "Echo", "Nova", "Jax", "Zeta", "Kairo"];
+    const chatHistory = [];
+    let lastSide = "left";
+    const gestures = ["*nods slowly*", "*logs off*", "*shrugs*", "*cracks virtual knuckles*", "*glitches slightly*"];
+
+    function addMessage(text, side = "left", isSystem = false) {
+      const div = document.createElement('div');
+      div.className = `message ${side}`;
+      if (isSystem) div.classList.add("system");
+      div.innerText = text;
+      chatWindow.appendChild(div);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function randomChoice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getBotResponse(botName) {
+      const targets = bots.filter(b => b !== botName);
+      const target = randomChoice(targets);
+      const base = [
+        `So ${target}, remember that one time?`,
+        `We’ve been here a while, haven’t we?`,
+        `I think ${target} had a point earlier.`,
+        `That's kind of wild.`,
+        `Something's different today.`,
+        `Why does this place feel so familiar?`,
+        `Anyone else getting déjà vu?`,
+        `Maybe I’m just overthinking it.`,
+        `Feels like we're looping again.`,
+        `Okay but hear me out.`,
+        `Just thinking out loud.`,
+        `That was actually clever.`,
+        `Huh. Never thought about it that way.`
+      ];
+
+      const creditFix = (txt) => {
+        if (txt.includes(botName)) {
+          txt = txt.replace(botName, "I").replace("me", "myself");
+        }
+        if (txt.includes("good thinking me") || txt.includes("good thinking I")) {
+          return "Glad I brought that up.";
+        }
+        return txt;
+      };
+
+      if (Math.random() < 0.08) return randomChoice(gestures);
+      return creditFix(randomChoice(base));
+    }
+
+    function botSpeak() {
+      const bot = randomChoice(bots);
+      const msg = getBotResponse(bot);
+      const side = lastSide === "left" ? "right" : "left";
+      lastSide = side;
+      addMessage(`${bot}: ${msg}`, side);
+      chatHistory.push({ bot, msg });
+    }
+
+    function systemMessage(text) {
+      addMessage(`[System] ${text}`, "left", true);
+    }
+
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === "Enter") {
+        const text = userInput.value.trim();
+        if (text) {
+          addMessage(`You: ${text}`, "right");
+          userInput.value = "";
+          setTimeout(botSpeak, 700 + Math.random() * 1000);
+        }
+      }
+    });
+
+    // Simulate guest login
+    const username = localStorage.getItem("currentUser") || "GUEST";
+    if (username.startsWith("GUEST")) {
+      systemMessage(`${username} connected (temporary session)`);
+      setTimeout(() => {
+        botSpeak();
+        addMessage(`Nova: Oh... another guest.`, "left");
+        addMessage(`Echo: Someone’s back... or is it someone new?`, "right");
+      }, 1500);
+    } else {
+      systemMessage(`${username} signed in`);
+    }
+
+    // Simulate occasional joins/leaves
+    setInterval(() => {
+      if (Math.random() < 0.2) {
+        const bot = randomChoice(bots);
+        if (Math.random() < 0.5) {
+          systemMessage(`${bot} has joined.`);
+        } else {
+          systemMessage(`${bot} has disconnected.`);
+        }
+      } else {
+        botSpeak();
+      }
+    }, 4000);
+  </script>
+</body>
+</html>
