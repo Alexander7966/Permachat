@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Program Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background: #000080;
+      font-family: 'Share Tech Mono', monospace;
+      color: black;
+      overflow: hidden;
+    }
+
+    .window {
+      background: #c0c0c0;
+      border: 2px outset white;
+      padding: 10px;
+      width: 380px;
+      margin: 80px auto;
+      position: relative;
+      box-shadow: 0 0 6px #00ffff;
+    }
+
+    .title-bar {
+      background: #000080;
+      color: white;
+      padding: 4px 8px;
+      font-weight: bold;
+      text-shadow: 1px 1px #000;
+    }
+
+    .programs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .program-button {
+      flex: 1 1 45%;
+      background: #e0e0e0;
+      border: 2px outset #fff;
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .program-button:hover {
+      background: #fff;
+    }
+
+    .crt-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 255, 0.03),
+        rgba(0, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <div class="crt-overlay"></div>
+
+  <div class="window">
+    <div class="title-bar">Program Manager</div>
+    <div class="programs">
+      <div class="program-button" onclick="location.href='chat.html'">Chatroom</div>
+      <div class="program-button" onclick="location.href='sandbox.html'">Sandbox</div>
+      <div class="program-button" onclick="location.href='stats.html'">Stats Viewer</div>
+      <div class="program-button" onclick="revealSecret()">???</div>
+    </div>
+    <div class="program-button" onclick="location.href='login.html'" style="margin-top: 20px;">EXIT</div>
+  </div>
+
+  <script>
+    function revealSecret() {
+      alert("You've unlocked a secret menu...");
+      location.href = "secret.html";
+    }
+  </script>
+</body>
+</html>
