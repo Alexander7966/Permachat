@@ -2,90 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PermaChat Boot</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <title>Booting PermaChat OS...</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
       background: black;
-      color: #00ffff;
+      color: #00ff00;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      height: 100vh;
-      overflow: hidden;
+      font-size: 14px;
+      padding: 20px;
     }
 
-    .screen {
-      border: 2px solid #00ffff;
-      padding: 24px;
-      width: 640px;
-      max-width: 90%;
-      margin: auto;
-      box-shadow: 0 0 10px #00ffff;
-      background: #000;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
-      opacity: 0;
-      animation: fadeIn 2s ease-in forwards, fadeOut 2s ease-out 10s forwards;
+    .crt {
+      animation: flicker 0.2s infinite alternate;
     }
 
-    .screen p {
-      white-space: pre-line;
-      line-height: 1.6;
-    }
-
-    .crt-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0, 255, 255, 0.03),
-        rgba(0, 255, 255, 0.03) 1px,
-        transparent 1px,
-        transparent 3px
-      );
-      z-index: 10;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
+    @keyframes flicker {
+      from { opacity: 0.9; }
       to { opacity: 1; }
     }
 
-    @keyframes fadeOut {
-      to { opacity: 0; }
+    .fade-out {
+      animation: fadeout 2s forwards;
+    }
+
+    @keyframes fadeout {
+      to {
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="crt-overlay"></div>
-  <div class="screen">
-    <h1>PermaChat Boot Interface</h1>
-    <p>
-Welcome to the experimental build of PermaChat.
+  <pre id="boot" class="crt">
+PermaChat Terminal v0.9.7
+(c) 1990-2025 PermaSoft Inc.
 
-This is a prototype powered by AI, simulating realistic conversations and long-term memory between chatbot users. The project blends retro aesthetics, forum culture, and emotional interaction design.
+Detecting Memory... OK
+Loading AI Threads... OK
+Initializing Social Memory Systems... OK
+Mapping User Profiles... OK
 
-This chat saves your progress only on this device. Nothing is synced or shared across machines. Future versions may allow cross-device syncing, custom bot personalities, and deeper simulation features.
+BOOT COMPLETE.
+Launching Interface...
+  </pre>
 
-You're interacting with something that evolves, misfires, and adapts — expect bugs, surprises, and character moments that may not be perfect.
-
-In the future, this will become a platform. For now, it's an experiment.
-
-Proceeding...
-    </p>
-  </div>
+  <audio id="bootSound" src="boot.mp3" autoplay></audio>
 
   <script>
+    const boot = document.getElementById("boot");
     setTimeout(() => {
-      window.location.href = "login.html";
-    }, 12000);
+      boot.classList.add("fade-out");
+      setTimeout(() => {
+        window.location.href = "main.html";
+      }, 2000);
+    }, 5000);
   </script>
 </body>
 </html>
+
