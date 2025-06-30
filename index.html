@@ -12,10 +12,8 @@
       color: #00ffff;
       font-family: 'Share Tech Mono', monospace;
       font-size: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       height: 100vh;
+      overflow: hidden;
     }
 
     .screen {
@@ -23,40 +21,52 @@
       padding: 24px;
       width: 640px;
       max-width: 90%;
+      margin: auto;
       box-shadow: 0 0 10px #00ffff;
       background: #000;
-    }
-
-    .screen h1 {
-      color: #00ffff;
-      font-size: 16px;
-      margin-bottom: 12px;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      animation: fadeIn 2s ease-in forwards, fadeOut 2s ease-out 10s forwards;
     }
 
     .screen p {
-      line-height: 1.5;
-      margin-bottom: 20px;
       white-space: pre-line;
+      line-height: 1.6;
     }
 
-    .screen button {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      background: black;
-      color: #00ffff;
-      border: 1px solid #00ffff;
-      padding: 8px 16px;
-      cursor: pointer;
+    .crt-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 255, 0.03),
+        rgba(0, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 10;
     }
 
-    .screen button:hover {
-      background: #001111;
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; }
     }
   </style>
 </head>
 <body>
+  <div class="crt-overlay"></div>
   <div class="screen">
-    <h1>PermaChat: Boot Interface</h1>
+    <h1>PermaChat Boot Interface</h1>
     <p>
 Welcome to the experimental build of PermaChat.
 
@@ -68,10 +78,14 @@ You're interacting with something that evolves, misfires, and adapts — expect 
 
 In the future, this will become a platform. For now, it's an experiment.
 
-Proceed if you understand this is a local, developing simulation.
-
+Proceeding...
     </p>
-    <button onclick="location.href='login.html'">Continue</button>
   </div>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 12000);
+  </script>
 </body>
 </html>
