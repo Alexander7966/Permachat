@@ -46,19 +46,26 @@
       to { opacity: 1; }
     }
 
-    .typing {
-      display: inline-block;
-      border-right: 2px solid #00ffff;
-      white-space: pre;
-      animation: blink 0.75s step-end infinite;
-    }
-
-    @keyframes blink {
-      50% { border-color: transparent; }
+    .crt-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 255, 0.03),
+        rgba(0, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      z-index: 10;
     }
   </style>
 </head>
 <body>
+  <div class="crt-overlay"></div>
   <div id="chatWindow"></div>
 
   <script>
@@ -152,3 +159,4 @@
   </script>
 </body>
 </html>
+
