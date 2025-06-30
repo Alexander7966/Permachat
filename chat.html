@@ -20,7 +20,7 @@
       top: 20px;
       left: 20px;
       right: 20px;
-      bottom: 40px;
+      bottom: 20px;
       padding: 10px;
       overflow-y: auto;
       border: 2px solid #00ffff;
@@ -39,78 +39,67 @@
 
     .left { float: left; clear: both; }
     .right { float: right; clear: both; }
+    .system { color: #ff4444; }
 
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
 
-    #inputBox {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-top: 2px solid #00ffff;
-      padding: 8px;
-      background: black;
+    .typing {
+      display: inline-block;
+      border-right: 2px solid #00ffff;
+      white-space: pre;
+      animation: blink 0.75s step-end infinite;
     }
 
-    #userInput {
-      background: black;
-      border: 1px solid #00ffff;
-      color: #00ffff;
-      width: 90%;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      padding: 6px;
-    }
-
-    #escapeHint {
-      position: absolute;
-      bottom: 4px;
-      right: 10px;
-      font-size: 10px;
-      color: #00ffff;
-      opacity: 0.6;
-    }
-
-    .system {
-      color: #ff4444;
+    @keyframes blink {
+      50% { border-color: transparent; }
     }
   </style>
 </head>
 <body>
   <div id="chatWindow"></div>
-  <div id="inputBox">
-    <input type="text" id="userInput" placeholder="Type here..." />
-    <div id="escapeHint">press ESC to leave chat</div>
-  </div>
 
   <script>
     const chatWindow = document.getElementById('chatWindow');
-    const userInput = document.getElementById('userInput');
-
     const bots = ["Riley", "Echo", "Nova", "Jax", "Zeta", "Kairo"];
-    const chatHistory = [];
-    let lastSide = "left";
     const gestures = ["*nods slowly*", "*logs off*", "*shrugs*", "*cracks virtual knuckles*", "*glitches slightly*"];
-
-    function addMessage(text, side = "left", isSystem = false) {
-      const div = document.createElement('div');
-      div.className = `message ${side}`;
-      if (isSystem) div.classList.add("system");
-      div.innerText = text;
-      chatWindow.appendChild(div);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+    let lastSide = "left";
 
     function randomChoice(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
+    function systemMessage(text) {
+      addMessage("[System] " + text, "left", true);
+    }
+
+    function addMessage(text, side = "left", isSystem = false) {
+      const div = document.createElement('div');
+      div.className = `message ${side}` + (isSystem ? " system" : "");
+      div.innerText = text;
+      chatWindow.appendChild(div);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function typeMessage(bot, msg, side) {
+      const div = document.createElement('div');
+      div.className = `message ${side}`;
+      chatWindow.appendChild(div);
+      let i = 0;
+      const interval = setInterval(() => {
+        div.innerText = `${bot}: ` + msg.slice(0, i + 1);
+        i++;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        if (i >= msg.length) clearInterval(interval);
+      }, 25 + Math.random() * 15);
+    }
+
     function getBotResponse(botName) {
       const targets = bots.filter(b => b !== botName);
       const target = randomChoice(targets);
+
       const base = [
         `So ${target}, remember that one time?`,
         `We’ve been here a while, haven’t we?`,
@@ -118,79 +107,48 @@
         `That's kind of wild.`,
         `Something's different today.`,
         `Why does this place feel so familiar?`,
-        `Anyone else getting déjà vu?`,
         `Maybe I’m just overthinking it.`,
         `Feels like we're looping again.`,
-        `Okay but hear me out.`,
         `Just thinking out loud.`,
         `That was actually clever.`,
         `Huh. Never thought about it that way.`
       ];
 
-      const creditFix = (txt) => {
-        if (txt.includes(botName)) {
-          txt = txt.replace(botName, "I").replace("me", "myself");
-        }
-        if (txt.includes("good thinking me") || txt.includes("good thinking I")) {
-          return "Glad I brought that up.";
-        }
-        return txt;
-      };
-
-      if (Math.random() < 0.08) return randomChoice(gestures);
-      return creditFix(randomChoice(base));
+      if (Math.random() < 0.1) return randomChoice(gestures);
+      let line = randomChoice(base);
+      if (line.includes(botName)) {
+        line = line.replace(botName, "I").replace("me", "myself");
+      }
+      if (line.includes("good thinking me")) {
+        return "Glad I brought that up.";
+      }
+      return line;
     }
 
     function botSpeak() {
       const bot = randomChoice(bots);
-      const msg = getBotResponse(bot);
       const side = lastSide === "left" ? "right" : "left";
       lastSide = side;
-      addMessage(`${bot}: ${msg}`, side);
-      chatHistory.push({ bot, msg });
+      const msg = getBotResponse(bot);
+      typeMessage(bot, msg, side);
     }
 
-    function systemMessage(text) {
-      addMessage(`[System] ${text}`, "left", true);
-    }
-
-    userInput.addEventListener('keydown', (e) => {
-      if (e.key === "Enter") {
-        const text = userInput.value.trim();
-        if (text) {
-          addMessage(`You: ${text}`, "right");
-          userInput.value = "";
-          setTimeout(botSpeak, 700 + Math.random() * 1000);
-        }
-      }
-    });
-
-    // Simulate guest login
+    // Initial boot-up
     const username = localStorage.getItem("currentUser") || "GUEST";
-    if (username.startsWith("GUEST")) {
-      systemMessage(`${username} connected (temporary session)`);
+    setTimeout(() => {
+      systemMessage(`${username} has connected.`);
       setTimeout(() => {
         botSpeak();
-        addMessage(`Nova: Oh... another guest.`, "left");
-        addMessage(`Echo: Someone’s back... or is it someone new?`, "right");
-      }, 1500);
-    } else {
-      systemMessage(`${username} signed in`);
-    }
-
-    // Simulate occasional joins/leaves
-    setInterval(() => {
-      if (Math.random() < 0.2) {
-        const bot = randomChoice(bots);
-        if (Math.random() < 0.5) {
-          systemMessage(`${bot} has joined.`);
-        } else {
-          systemMessage(`${bot} has disconnected.`);
-        }
-      } else {
-        botSpeak();
-      }
-    }, 4000);
+        setInterval(() => {
+          if (Math.random() < 0.2) {
+            const bot = randomChoice(bots);
+            systemMessage(`${bot} has ${Math.random() < 0.5 ? "joined" : "disconnected"}.`);
+          } else {
+            botSpeak();
+          }
+        }, 4000);
+      }, 1000);
+    }, 1000);
   </script>
 </body>
 </html>
